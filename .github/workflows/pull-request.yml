@@ -66,7 +66,9 @@ jobs:
           path: terraform.tfstate.backup
           key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-backup
       - name: Echo test
-        run: cat terraform.tfstate
+        run: |
+          ls -la
+          cat terraform.tfstate
       - name: Terraform Init
         # if: github.event_name == 'pull_request' && github.event.action == 'open'
         run: terraform init
