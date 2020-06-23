@@ -1,0 +1,20 @@
+name: Pull Request
+on: 
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+jobs: 
+  app: 
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: zsh
+        working-directory: .
+    steps: 
+      - uses: actions/checkout@v2
+      - name: Print references
+        run: |
+          echo ${{ github.ref }} 
+          echo ${{ github.base_ref }} 
+          echo ${{ github.head_ref }}
+          echo ${{ github }}
+
