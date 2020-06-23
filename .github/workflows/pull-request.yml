@@ -5,10 +5,6 @@ on:
 jobs: 
   app: 
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: zsh
-        working-directory: .
     steps: 
       - uses: actions/checkout@v2
       - name: Print references
