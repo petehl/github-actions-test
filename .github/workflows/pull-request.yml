@@ -50,13 +50,35 @@ jobs:
         run: echo "$MATRIX_CONTEXT"
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
+      - name: Restore terraform folder from cache
+        uses: actions/cache@v2
+        with:
+          path: .terraform/
+          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}
+          restore-keys: |
+            ${{ runner.os }}-terraform-cache-${{github.event_name}}
+            ${{ runner.os }}-terraform-cache-
+            ${{ runner.os }}-
       - name: Restore terraform state from cache
         uses: actions/cache@v2
         with:
-          path: .
+          path: terraform.tfstate
           key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}
           restore-keys: |
-            ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}
+            ${{ runner.os }}-terraform-cache-${{github.event_name}}
+            ${{ runner.os }}-terraform-cache-
+            ${{ runner.os }}-
+      - name: Restore terraform state from cache
+        uses: actions/cache@v2
+        with:
+          path: terraform.tfstate.backup
+          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}
+          restore-keys: |
+            ${{ runner.os }}-terraform-cache-${{github.event_name}}
+            ${{ runner.os }}-terraform-cache-
+            ${{ runner.os }}-
+      - name: Echo test
+        run: cat terraform.tfstate
       - name: Terraform Init
         # if: github.event_name == 'pull_request' && github.event.action == 'open'
         run: terraform init
