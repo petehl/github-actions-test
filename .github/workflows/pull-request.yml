@@ -10,7 +10,6 @@ jobs:
         shell: bash
         working-directory: terraform
     steps: 
-      - name: Checkout
       - uses: actions/checkout@v2
       - name: Print references
         run: |
