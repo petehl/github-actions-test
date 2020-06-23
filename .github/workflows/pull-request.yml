@@ -18,6 +18,6 @@ jobs:
           echo ${{ github.run_id }}
           echo ${{ github.run_number }}
           echo ${{ github.job }}
-          echo ${{ github.event }}
+          echo ${{ github.event.type }}
           echo ${{ github.event_path }}
 
