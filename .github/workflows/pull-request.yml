@@ -54,31 +54,19 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .terraform/
-          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}
-          restore-keys: |
-            ${{ runner.os }}-terraform-cache-${{github.event_name}}
-            ${{ runner.os }}-terraform-cache-
-            ${{ runner.os }}-
+          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-base
       - name: Restore terraform state from cache
         uses: actions/cache@v2
         with:
           path: terraform.tfstate
-          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}
-          restore-keys: |
-            ${{ runner.os }}-terraform-cache-${{github.event_name}}
-            ${{ runner.os }}-terraform-cache-
-            ${{ runner.os }}-
+          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-state
       - name: Restore terraform state from cache
         uses: actions/cache@v2
         with:
           path: terraform.tfstate.backup
-          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}
-          restore-keys: |
-            ${{ runner.os }}-terraform-cache-${{github.event_name}}
-            ${{ runner.os }}-terraform-cache-
-            ${{ runner.os }}-
-      - name: Echo test
-        run: cat terraform.tfstate
+          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-backup
+      # - name: Echo test
+      #   run: cat terraform.tfstate
       - name: Terraform Init
         # if: github.event_name == 'pull_request' && github.event.action == 'open'
         run: terraform init
