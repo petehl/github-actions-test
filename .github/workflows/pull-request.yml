@@ -53,21 +53,21 @@ jobs:
       - name: Restore terraform folder from cache
         uses: actions/cache@v2
         with:
-          path: .terraform/
+          path: terraform/.terraform
           key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-base-${{ hashFiles('**/terraform') }}
           restore-keys: |
             ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-base-
       - name: Restore terraform state from cache
         uses: actions/cache@v2
         with:
-          path: terraform.tfstate
+          path: terraform/terraform.tfstate
           key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-state-${{ hashFiles('**/terraform') }}
           restore-keys: |
             ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-state-
       - name: Restore terraform state from cache
         uses: actions/cache@v2
         with:
-          path: terraform.tfstate.backup
+          path: terraform/terraform.tfstate.backup
           key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-backup-${{ hashFiles('**/terraform') }}
           restore-keys: |
             ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-backup-
