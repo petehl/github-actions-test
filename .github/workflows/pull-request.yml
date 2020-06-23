@@ -68,7 +68,10 @@ jobs:
       - name: Echo test
         run: |
           ls -la
-          cat terraform.tfstate
+          pwd
+          cd ..
+          ls -la
+          cd -
       - name: Terraform Init
         # if: github.event_name == 'pull_request' && github.event.action == 'open'
         run: terraform init
@@ -78,3 +81,9 @@ jobs:
         run: terraform plan -var "environment=${{github.event_name}}_${{github.event.number}}" -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}" -out=plan.tfplan
       - name: Terraform Apply
         run: terraform apply  -auto-approve "plan.tfplan"
+      - name: Echo test
+        run: |
+          ls -la
+          pwd
+          cd ..
+          ls -la
