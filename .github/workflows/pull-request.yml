@@ -65,4 +65,4 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -var "environment=${{github.event_name}}_${{github.event.number}}" -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}" -out=plan.tfplan
       - name: Terraform Apply
-        run: terraform apply "plan.tfplan" -auto-approve
+        run: terraform apply  -auto-approve "plan.tfplan"
