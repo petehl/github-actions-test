@@ -21,10 +21,6 @@ variable "environment" {
   description = "The environment that the configuration is to be deployed to"
 }
 
-variable "assume_role_arn" {
-  type = string
-}
-
 variable "az_count" {
   type        = string
   description = "Number of Availbility zones to cover in a given AWS region"
