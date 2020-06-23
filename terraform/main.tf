@@ -19,3 +19,8 @@ resource "aws_vpc" "public" {
   cidr_block = "10.0.0.0/16"
   tags       = merge(local.common_tags, { Name = "${local.default_name}-vpc_public" })
 }
+
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.public.id
+  tags   = merge(local.common_tags, { Name = "${local.default_name}-igw" })
+}
