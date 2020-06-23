@@ -12,5 +12,12 @@ jobs:
           echo ${{ github.ref }} 
           echo ${{ github.base_ref }} 
           echo ${{ github.head_ref }}
-          echo ${{ github }}
+          echo ${{ github.action }}
+          echo ${{ github.event_name }}
+          echo ${{ github.actor }}
+          echo ${{ github.run_id }}
+          echo ${{ github.run_number }}
+          echo ${{ github.job }}
+          echo ${{ github.event }}
+          echo ${{ github.event_path }}
 
