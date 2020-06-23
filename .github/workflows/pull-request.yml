@@ -5,6 +5,10 @@ on:
 jobs: 
   app: 
     runs-on: ubuntu-latest
+    defaults:
+      run: 
+        shell: bash
+        working-directory: terraform
     steps: 
       - uses: actions/checkout@v2
       - name: Print references
@@ -44,4 +48,45 @@ jobs:
         env:
           MATRIX_CONTEXT: ${{ toJson(matrix) }}
         run: echo "$MATRIX_CONTEXT"
-
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+      - name: Restore terraform folder from cache
+        uses: actions/cache@v2
+        with:
+          path: terraform/.terraform
+          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-base-${{ hashFiles('**/terraform') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-base-
+      - name: Restore terraform state from cache
+        uses: actions/cache@v2
+        with:
+          path: terraform/terraform.tfstate
+          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-state-${{ hashFiles('**/terraform') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-state-
+      - name: Restore terraform state from cache
+        uses: actions/cache@v2
+        with:
+          path: terraform/terraform.tfstate.backup
+          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-backup-${{ hashFiles('**/terraform') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-backup-
+      - name: Echo test
+        run: |
+          ls -la
+          pwd
+          cd ..
+          ls -la
+          cd -
+      - name: Terraform Init
+        # if: github.event_name == 'pull_request' && github.event.action == 'open'
+        run: terraform init
+      - name: Terraform Format
+        run: terraform fmt -check
+      - name: Terraform Plan
+        run: terraform plan -var "environment=${{github.event_name}}_${{github.event.number}}" -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}" -out=plan.tfplan
+      - name: Terraform Apply
+        run: terraform apply  -auto-approve "plan.tfplan"
+      - name: PR is closing - Terraform destroy
+        if: github.event_name == 'pull_request' && github.event.action == 'closed'
+        run: terraform destory -auto-approve
