@@ -54,17 +54,23 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .terraform/
-          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-base
+          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-base-${{ hashFiles('**/terraform') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-base-
       - name: Restore terraform state from cache
         uses: actions/cache@v2
         with:
           path: terraform.tfstate
-          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-state
+          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-state-${{ hashFiles('**/terraform') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-state-
       - name: Restore terraform state from cache
         uses: actions/cache@v2
         with:
           path: terraform.tfstate.backup
-          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-backup
+          key: ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-backup-${{ hashFiles('**/terraform') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-cache-${{github.event_name}}_${{github.event.number}}-backup-
       - name: Echo test
         run: |
           ls -la
