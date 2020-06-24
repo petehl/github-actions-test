@@ -17,13 +17,12 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
-      - name: Echo test
-        run: |
-          ls -la
-          pwd
-          cd ..
-          ls -la
-          cd -
+      - name: Configure AWS Credentials (SD Dev Account)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: eu-west-1
       - name: Terraform Init
         # if: github.event_name == 'pull_request' && github.event.action == 'open'
         run: |
