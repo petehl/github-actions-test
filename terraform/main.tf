@@ -3,9 +3,16 @@ locals {
   common_tags = {
     Name        = "${var.environment}-sd-frontend"
     Environment = var.environment
-    Test        = "revert old tag"
+    Test        = "s3 storage update"
   }
 }
+
+terraform {
+  backend "s3" {
+
+  }
+}
+
 
 provider "aws" {
   access_key = var.aws_access_key
