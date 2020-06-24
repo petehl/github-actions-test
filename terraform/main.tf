@@ -9,7 +9,7 @@ locals {
 
 terraform {
   backend "s3" {
-    
+
   }
 }
 
