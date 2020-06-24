@@ -28,7 +28,7 @@ jobs:
         run: |
           terraform init \
           -backend-config="bucket=sd.github-actions-artifact" \
-          -backend-config="key=terraform/${{github.event_name}}/${{github.event.number}}" \
+          -backend-config="key=terraform/${{github.repository}}/${{github.event_name}}/${{github.event.number}}" \
           -backend-config="region=eu-west-1" \
           -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" \
           -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}"
@@ -45,4 +45,8 @@ jobs:
         run: terraform apply  -auto-approve "plan.tfplan"
       - name: PR is closing - Terraform destroy
         if: github.event_name == 'pull_request' && github.event.action == 'closed'
-        run: terraform destroy -auto-approve
+        run: |
+          terraform destroy -auto-approve \
+          -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" \
+          -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}"
+
