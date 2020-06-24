@@ -27,7 +27,7 @@ jobs:
         # if: github.event_name == 'pull_request' && github.event.action == 'open'
         run: |
           terraform init \
-          -backend-config="bucket=sd.github-actions-test" \
+          -backend-config="bucket=sd.github-actions-artifact" \
           -backend-config="key=terraform/${{github.event_name}}/${{github.event.number}}" \
           -backend-config="region=eu-west-1" \
           -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" \
