@@ -19,6 +19,12 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
+      - name: Bash test
+        env: 
+          IMAGE_NAME: develop
+        run: |
+          if [ ${{ github.event_name == 'pull_request' }} ]; then IMAGE_TAG=pull-request-${{github.event.number}}; fi
+          echo develop
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Configure AWS Credentials (SD Dev Account)
@@ -32,7 +38,7 @@ jobs:
         run: |
           terraform init \
           -backend-config="bucket=$GITHUB_ACTION_S3_BUCKET" \
-          -backend-config="key=terraform/$TERRAFORM_S3_BUCKET_KEY" \
+          -backend-config="key=$TERRAFORM_S3_BUCKET_KEY" \
           -backend-config="region=eu-west-1" \
           -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" \
           -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}"
