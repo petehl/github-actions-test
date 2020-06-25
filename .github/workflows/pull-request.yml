@@ -23,7 +23,7 @@ jobs:
         env: 
           IMAGE_NAME: develop
         run: |
-          if [ ${{ github.event_name == 'pull_request' }} ]; then IMAGE_TAG=pull-request-${{github.event.number}}; fi
+          if [ ${{ github.event_name == 'pull_request' }} ]; then export IMAGE_TAG=pull-request-${{github.event.number}}; fi
           echo develop
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
