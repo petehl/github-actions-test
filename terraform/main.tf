@@ -3,7 +3,7 @@ locals {
   common_tags = {
     Name        = "${var.environment}-sd-frontend"
     Environment = var.environment
-    Test        = "final time"
+    Test        = "final update"
   }
 }
 
