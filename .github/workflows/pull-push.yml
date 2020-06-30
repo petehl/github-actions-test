@@ -1,0 +1,28 @@
+name: Pull push
+on: 
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+jobs: 
+  app: 
+    runs-on: ubuntu-latest
+    defaults:
+      run: 
+        shell: bash
+        working-directory: terraform
+    env:
+      GITHUB_ACTION_S3_BUCKET: sd.github-actions-artifact
+      TERRAFORM_S3_BUCKET_KEY: terraform/${{github.repository}}/${{github.event_name}}/${{github.event.number}}
+      TERRAFORM_ENVIRONMENT: ${{github.event_name}}_${{github.event.number}}"
+    steps: 
+      - uses: actions/checkout@v2
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Bash test
+        env: 
+          IMAGE_TAG: develop
+        run: |
+          if [ ${{ github.event_name }} = 'pull_request' ]; then export IMAGE_TAG=pull-request-${{github.event.number}}; fi
+          echo $IMAGE_TAG
