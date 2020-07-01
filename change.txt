@@ -3,3 +3,4 @@ changelog
 adding test
 
 further change to trigger build
+testing slack - please post a message

@@ -1,0 +1,18 @@
+name: slack-notification-with-optional-parameters
+
+on: [push]
+
+jobs:
+  slack-notification-with-optional-parameters:
+    runs-on: ubuntu-latest
+    name: Sends a message to Slack when a push,
+    steps:
+      - name: Send message to Slack API
+        uses: archive/github-actions-slack@v1.0.0
+        with:
+          slack-bot-user-oauth-access-token: ${{ secrets.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}
+          slack-channel: peter-private-test
+          slack-text: Hello! Something is burning! Or not...
+          slack-optional-icon_emoji: ":fire:"
+      - name: Result from "Send Message"
+        run: echo "The result was ${{ steps.notify.outputs.slack-result }}"
