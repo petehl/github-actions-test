@@ -12,7 +12,7 @@ jobs:
         with:
           slack-bot-user-oauth-access-token: ${{ secrets.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}
           slack-channel: peter-private-test
-          slack-text: Hello! Something is burning! Or not...
+          slack-text: Hello! Something is burning! Or not... ${{ github.sha }}
           slack-optional-icon_emoji: ":fire:"
       - name: Result from "Send Message"
         run: echo "The result was ${{ steps.notify.outputs.slack-result }}"
