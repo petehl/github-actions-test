@@ -28,5 +28,5 @@ jobs:
           echo $IMAGE_TAG
       - name: Git Short
         run: |
-          git rev-parse
-          git rev-parse --short
+          git rev-parse HEAD
+          git rev-parse --short HEAD
