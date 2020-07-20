@@ -26,3 +26,7 @@ jobs:
         run: |
           if [ ${{ github.event_name }} = 'pull_request' ]; then export IMAGE_TAG=pull-request-${{github.event.number}}; fi
           echo $IMAGE_TAG
+      - name: Git Short
+        run: |
+          git rev-parse
+          git rev-parse --short
