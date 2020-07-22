@@ -30,3 +30,4 @@ jobs:
         run: |
           git rev-parse HEAD
           git rev-parse --short HEAD
+          cat test.json | jq
