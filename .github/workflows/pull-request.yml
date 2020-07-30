@@ -16,7 +16,7 @@ jobs:
     steps: 
       - uses: actions/checkout@v2
         with:
-          depth: 20
+          fetch-depth: 20
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -28,7 +28,7 @@ jobs:
           if [ ${{ github.event_name == 'pull_request' }} ]; then export IMAGE_TAG=pull-request-${{github.event.number}}; fi
           echo $IMAGE_TAG
           echo ${{ github.sha }}
-          git log -20
+          git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Configure AWS Credentials (SD Dev Account)
