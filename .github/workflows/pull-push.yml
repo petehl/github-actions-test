@@ -30,4 +30,6 @@ jobs:
         run: |
           git rev-parse HEAD
           git rev-parse --short HEAD
+          echo "hash = $(git rev-parse --short HEAD)"
+          echo "::set-output name=sha7::$(git rev-parse --short HEAD)"
           jq .test ../test.json
