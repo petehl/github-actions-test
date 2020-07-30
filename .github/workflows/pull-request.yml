@@ -22,7 +22,6 @@ jobs:
         run: |
           export CORRECT_GIT_HASH=${{github.sha}}
           if [ "${{ github.event.action }}" = "synchronize" ]; then export CORRECT_GIT_HASH=${{github.event.pull_request.head.sha}}; fi
-          echo "${CORRECT_GIT_HASH}"
       - uses: actions/checkout@v2
         with:
           fetch-depth: 20
