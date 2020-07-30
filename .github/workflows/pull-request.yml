@@ -25,6 +25,8 @@ jobs:
         run: |
           if [ ${{ github.event_name == 'pull_request' }} ]; then export IMAGE_TAG=pull-request-${{github.event.number}}; fi
           echo $IMAGE_TAG
+          echo ${{ github.sha }}
+          git log -10
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Configure AWS Credentials (SD Dev Account)
