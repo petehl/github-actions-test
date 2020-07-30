@@ -6,10 +6,6 @@ on:
 jobs: 
   app: 
     runs-on: ubuntu-latest
-    defaults:
-      run: 
-        shell: bash
-        working-directory: terraform
     env:
       GITHUB_ACTION_S3_BUCKET: sd.github-actions-artifact
       TERRAFORM_S3_BUCKET_KEY: terraform/${{github.repository}}/${{github.event_name}}/${{github.event.number}}
