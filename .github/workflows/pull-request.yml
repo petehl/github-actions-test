@@ -10,7 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
      - name: SHA bro
-       run: echo "hello"
+       run: |
+        echo "${{github.sha}}"
+        export GITHOOB=${{github.sha}}
+        echo "${GITHOOB}"
 
   app: 
     runs-on: ubuntu-latest
