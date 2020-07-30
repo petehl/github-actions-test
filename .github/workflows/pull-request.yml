@@ -20,6 +20,7 @@ jobs:
       - name: Ensure correct git hash
         id: correct_git_hash
         run: export CORRECT_GIT_HASH=${{ github.sha }}
+      - name: Checkout
       - uses: actions/checkout@v2
         with:
           fetch-depth: 20
