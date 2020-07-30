@@ -6,6 +6,12 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 jobs: 
+  correct_sha:
+    runs-on: ubuntu-latest
+    steps:
+     - name: SHA bro
+       run: echo "hello"
+
   app: 
     runs-on: ubuntu-latest
     defaults:
