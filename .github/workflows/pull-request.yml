@@ -19,13 +19,10 @@ jobs:
     steps: 
       - name: Ensure correct git hash
         id: correct_git_hash
-        run: |
-          export CORRECT_GIT_HASH=${{github.sha}}
-          echo "::set-output name=git_sha::${CORRECT_GIT_HASH}"
+        run: export CORRECT_GIT_HASH=${{ github.sha }}
       - uses: actions/checkout@v2
         with:
           fetch-depth: 20
-          ref: ${{ steps.correct_git_hash.outputs.git_sha }}
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
