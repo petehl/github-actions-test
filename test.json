@@ -1,4 +1,5 @@
 { 
   "test": "string",
-  "another-test": 24
+  "another-test": 24,
+  "boolean": true
 }
