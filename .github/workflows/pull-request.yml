@@ -20,16 +20,12 @@ jobs:
     defaults:
       run: 
         shell: bash
+        working-directory: terraform
     env:
       GITHUB_ACTION_S3_BUCKET: sd.github-actions-artifact
       TERRAFORM_S3_BUCKET_KEY: terraform/${{github.repository}}/${{github.event_name}}/${{github.event.number}}
       TERRAFORM_ENVIRONMENT: ${{github.event_name}}_${{github.event.number}}"
     steps:
-      - name: SHA bro
-        run: |
-          echo "${{github.sha}}"
-          export GITHOOB=${{github.sha}}
-          echo "${GITHOOB}"
       - name: Checkout
         uses: actions/checkout@v2
         with:
