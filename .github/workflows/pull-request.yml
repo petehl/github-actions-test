@@ -15,6 +15,8 @@ jobs:
       TERRAFORM_ENVIRONMENT: ${{github.event_name}}_${{github.event.number}}"
     steps: 
       - uses: actions/checkout@v2
+        with:
+          depth: 20
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -26,7 +28,7 @@ jobs:
           if [ ${{ github.event_name == 'pull_request' }} ]; then export IMAGE_TAG=pull-request-${{github.event.number}}; fi
           echo $IMAGE_TAG
           echo ${{ github.sha }}
-          git log -10
+          git log -20
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Configure AWS Credentials (SD Dev Account)
