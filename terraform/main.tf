@@ -31,3 +31,11 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.public.id
   tags   = merge(local.common_tags, { Name = "${local.default_name}-igw" })
 }
+
+output "aws_vpc_public" {
+  value = aws_vpc.public.id
+}
+
+output "aws_internet_gateway_igw" {
+  value = aws_internet_gateway.igw.id
+}
