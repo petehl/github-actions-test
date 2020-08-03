@@ -43,7 +43,7 @@ jobs:
             This is a multi-line test comment
             - With GitHub **Markdown** :sparkles:
             - Created by [create-or-update-comment][1]
-          reactions: 'confused'
+          reactions: 'rocket'
 
   terraform: 
     runs-on: ubuntu-latest
@@ -51,7 +51,6 @@ jobs:
       run: 
         shell: bash
         working-directory: terraform
-    if: github.ref == 'refs/heads/master'
     env:
       GITHUB_ACTION_S3_BUCKET: sd.github-actions-artifact
       TERRAFORM_S3_BUCKET_KEY: terraform/${{github.repository}}/${{github.event_name}}/${{github.event.number}}
@@ -108,4 +107,23 @@ jobs:
           -var "environment=${{github.event_name}}_${{github.event.number}}" \
           -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" \
           -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}"
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{github.event.number}}
+          body-includes: PR Deployment links
+      - name: Create Updated comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{github.event.number}}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: |
+            PR Deployment links :sparkles: 
+            - [API][1]
+            - [Client App][2]
+            
+            [1]: http://example.com
+            [2]: http://example.com/examples
+          reactions: 'rocket'
 
