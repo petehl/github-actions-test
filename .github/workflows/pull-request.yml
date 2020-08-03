@@ -21,8 +21,9 @@ jobs:
         with:
           issue-number: ${{github.event.number}}
           comment-id: ${{ steps.fc.outputs.comment-id }}
+          edit-mode: replace
           body: |
-            This is a multi-line test comment
+            This is a multi-line test comment because we found Github before
             - With GitHub **Markdown** :sparkles:
             - Created by [create-or-update-comment][1]
           reactions: 'eyes'
@@ -41,8 +42,9 @@ jobs:
           comment-id: ${{ steps.fcnf.outputs.comment-id }}
           body: |
             This is a multi-line test comment
-            - With GitHub **Markdown** :sparkles:
+            - With GitHub **Markdown** :sparkles: 
             - Created by [create-or-update-comment][1]
+            - The text was not found.
           reactions: 'rocket'
 
   terraform: 
@@ -124,6 +126,7 @@ jobs:
         with:
           issue-number: ${{github.event.number}}
           comment-id: ${{ steps.fc.outputs.comment-id }}
+          edit-mode: replace
           body: |
             PR Deployment links :sparkles: 
             - [API][1]
@@ -133,5 +136,5 @@ jobs:
             [1]: http://example.com
             [2]: http://example.com/examples
             
-          reactions: 'rocket'
+          reactions: hooray, rocket
 
