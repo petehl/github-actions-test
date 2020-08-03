@@ -24,13 +24,13 @@ jobs:
         id: fc
         with:
           issue-number: ${{github.event.number}}
-          body-includes: search string GitHub
+          body-includes: GitHub
       - name: Find Comment NotFound
         uses: peter-evans/find-comment@v1 
         id: fcnf
         with:
           issue-number: ${{github.event.number}}
-          body-includes: search string NotFound
+          body-includes: NotFound
       - run: echo ${{ steps.fc.outputs.comment-id }}
       - run: echo ${{ steps.fcnf.outputs.comment-id }}
 
