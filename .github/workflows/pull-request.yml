@@ -6,37 +6,62 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 jobs: 
-  correct_sha:
+
+  comment_pr_test:
     runs-on: ubuntu-latest
     steps:
-     - name: SHA bro
-       run: |
-        echo "${{github.sha}}"
-        export GITHOOB=${{github.sha}}
-        echo "${GITHOOB}"
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{github.event.number}}
+          body-includes: GitHub
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{github.event.number}}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          edit-mode: replace
+          body: |
+            This is a multi-line test comment because we found Github before
+            - With GitHub **Markdown** :sparkles:
+            - Created by [create-or-update-comment][1]
+          reactions: 'eyes'
+      - name: Find Comment NotFound
+        uses: peter-evans/find-comment@v1 
+        id: fcnf
+        with:
+          issue-number: ${{github.event.number}}
+          body-includes: NotFound
+      - run: echo ${{ steps.fc.outputs.comment-id }}
+      - run: echo ${{ steps.fcnf.outputs.comment-id }}
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{github.event.number}}
+          comment-id: ${{ steps.fcnf.outputs.comment-id }}
+          body: |
+            This is a multi-line test comment
+            - With GitHub **Markdown** :sparkles: 
+            - Created by [create-or-update-comment][1]
+            - The text was not found.
+          reactions: 'rocket'
 
-  app: 
+  terraform: 
     runs-on: ubuntu-latest
     defaults:
       run: 
         shell: bash
+        working-directory: terraform
     env:
       GITHUB_ACTION_S3_BUCKET: sd.github-actions-artifact
       TERRAFORM_S3_BUCKET_KEY: terraform/${{github.repository}}/${{github.event_name}}/${{github.event.number}}
       TERRAFORM_ENVIRONMENT: ${{github.event_name}}_${{github.event.number}}"
     steps:
-      - name: SHA bro
-        run: |
-          echo "${{github.sha}}"
-          export GITHOOB=${{github.sha}}
-          echo "${GITHOOB}"
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 20
-      - name: Ensure correct git hash dont cache me bro
-        id: correct_git_hash
-        run: echo ${{ github.sha }}
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -77,6 +102,8 @@ jobs:
           -out=plan.tfplan
       - name: Terraform Apply
         run: terraform apply  -auto-approve "plan.tfplan"
+      - name: Terraform Output
+        run: terraform output
       - name: PR is closing - Terraform destroy
         if: github.event_name == 'pull_request' && github.event.action == 'closed'
         run: |
@@ -84,4 +111,30 @@ jobs:
           -var "environment=${{github.event_name}}_${{github.event.number}}" \
           -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" \
           -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}"
+      - name: Terraform Outputs
+        id: terraform-outputs
+        run: |
+          echo "::set-output name=vpc_id::$(terraform output | awk -F '[=]+' '/aws_vpc_public/ {print $2}')"
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{github.event.number}}
+          body-includes: PR ${{github.event.number}} Deployment links
+      - name: Create Updated comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{github.event.number}}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          edit-mode: replace
+          body: |
+            PR ${{github.event.number}} Deployment links :sparkles: 
+            - [API][1]
+            - [Client App][2]
+            - VPC ${{steps.terraform-outputs.outputs.vpc_id}}
+            
+            [1]: http://example.com
+            [2]: http://example.com/examples
+            
+          reactions: hooray, rocket
 
