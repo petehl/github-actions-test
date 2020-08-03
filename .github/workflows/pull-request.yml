@@ -120,7 +120,7 @@ jobs:
         id: fc
         with:
           issue-number: ${{github.event.number}}
-          body-includes: PR Deployment links
+          body-includes: PR ${{github.event.number}} Deployment links
       - name: Create Updated comment
         uses: peter-evans/create-or-update-comment@v1
         with:
@@ -128,7 +128,7 @@ jobs:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           edit-mode: replace
           body: |
-            PR Deployment links :sparkles: 
+            PR ${{github.event.number}} Deployment links :sparkles: 
             - [API][1]
             - [Client App][2]
             - VPC ${{steps.terraform-outputs.outputs.vpc_id}}
