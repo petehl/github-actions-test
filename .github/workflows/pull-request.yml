@@ -112,7 +112,7 @@ jobs:
       - name: Terraform Outputs
         id: terraform-outputs
         run: |
-          echo "::set-output name=vpc_id::$(terraform output | awk -F '[=]+' '/aws_vpc_public/ {print $2})"
+          echo "::set-output name=vpc_id::$(terraform output | awk -F '[=]+' '/aws_vpc_public/ {print $2}'')"
       - name: Find Comment
         uses: peter-evans/find-comment@v1
         id: fc
