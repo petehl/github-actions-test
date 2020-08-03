@@ -10,21 +10,22 @@ jobs:
   comment_pr_test:
     runs-on: ubuntu-latest
     steps:
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          issue-number: ${{github.event.number}}
-          body: |
-            This is a multi-line test comment
-            - With GitHub **Markdown** :sparkles:
-            - Created by [create-or-update-comment][1]
-          reactions: '+1'
       - name: Find Comment
         uses: peter-evans/find-comment@v1
         id: fc
         with:
           issue-number: ${{github.event.number}}
           body-includes: GitHub
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{github.event.number}}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: |
+            This is a multi-line test comment
+            - With GitHub **Markdown** :sparkles:
+            - Created by [create-or-update-comment][1]
+          reactions: 'eyes'
       - name: Find Comment NotFound
         uses: peter-evans/find-comment@v1 
         id: fcnf
