@@ -19,6 +19,19 @@ jobs:
             - With GitHub **Markdown** :sparkles:
             - Created by [create-or-update-comment][1]
           reactions: '+1'
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{github.event.number}}
+          body-includes: search string GitHub
+      - name: Find Comment NotFound
+        uses: peter-evans/find-comment@v1
+        id: fcnf
+        with:
+          issue-number: ${{github.event.number}}
+          body-includes: search string NotFound
+      - run: echo ${{ steps.fcnf.outputs.comment-id }}
 
   terraform: 
     runs-on: ubuntu-latest
