@@ -34,6 +34,16 @@ jobs:
           body-includes: NotFound
       - run: echo ${{ steps.fc.outputs.comment-id }}
       - run: echo ${{ steps.fcnf.outputs.comment-id }}
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{github.event.number}}
+          comment-id: ${{ steps.fcnf.outputs.comment-id }}
+          body: |
+            This is a multi-line test comment
+            - With GitHub **Markdown** :sparkles:
+            - Created by [create-or-update-comment][1]
+          reactions: 'confused'
 
   terraform: 
     runs-on: ubuntu-latest
