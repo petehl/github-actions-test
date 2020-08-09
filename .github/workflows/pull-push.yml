@@ -13,10 +13,11 @@ jobs:
           deno-version: v1.x
       - name: Test DENO
         env:
-          GIT: true
-          other: also_true
-          thirds: truetoo
-        run: deno --version
+          AUTH0_HOST: ${{ secrets.AUTH0_HOST }}
+          AUTH0_TARGET_CLIENT_ID: ${{ secrets.AUTH0_TARGET_CLIENT_ID }}
+          AUTH0_MGMT_APP_CLIENT_ID: ${{ secrets.AUTH0_MGMT_APP_CLIENT_ID }}
+          AUTH0_MGMT_APP_CLIENT_SECRET: ${{ secrets.AUTH0_MGMT_APP_CLIENT_SECRET }}
+        run: deno run --allow-env --allow-net  updateAuth0Callbacks.ts add http://localhost:9923
   app: 
     runs-on: ubuntu-latest
     defaults:
