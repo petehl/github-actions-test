@@ -35,12 +35,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
       - name: Bash test
-        env: 
-          IMAGE_TAG: develop
-        run: |
-          if [ ${{ github.event_name }} = 'pull_request' ]; then export IMAGE_TAG=pull-request-${{github.event.number}}; fi
-          echo $IMAGE_TAG
-          ./../basic.sh terraform,shell,magic
+        run: docker version
       - name: Git Short
         run: |
           git rev-parse HEAD
