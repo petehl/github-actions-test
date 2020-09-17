@@ -4,7 +4,6 @@ on:
     workflows: ["Push"]
     types: 
       - completed
-      - requested
 jobs:
   app:
     runs-on: ubuntu-latest
