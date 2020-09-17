@@ -1,23 +1,7 @@
-name: Pull push
+name: push
 on: 
   push:
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
 jobs:
-  deno_test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: denolib/setup-deno@v2
-        with:
-          deno-version: v1.x
-      - name: Test DENO
-        env:
-          AUTH0_HOST: ${{ secrets.AUTH0_HOST }}
-          AUTH0_TARGET_CLIENT_ID: ${{ secrets.AUTH0_TARGET_CLIENT_ID }}
-          AUTH0_MGMT_APP_CLIENT_ID: ${{ secrets.AUTH0_MGMT_APP_CLIENT_ID }}
-          AUTH0_MGMT_APP_CLIENT_SECRET: ${{ secrets.AUTH0_MGMT_APP_CLIENT_SECRET }}
-        run: deno run --allow-env --allow-net  updateAuth0Callbacks.ts add http://localhost:9923
   app: 
     runs-on: ubuntu-latest
     defaults:
