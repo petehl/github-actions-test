@@ -1,140 +1,140 @@
-name: Pull Request
-on: 
-  push: 
-    branches:
-      - master
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-jobs: 
+# name: Pull Request
+# on: 
+#   push: 
+#     branches:
+#       - master
+#   pull_request:
+#     types: [opened, synchronize, reopened, closed]
+# jobs: 
 
-  comment_pr_test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Find Comment
-        uses: peter-evans/find-comment@v1
-        id: fc
-        with:
-          issue-number: ${{github.event.number}}
-          body-includes: GitHub
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          issue-number: ${{github.event.number}}
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          edit-mode: replace
-          body: |
-            This is a multi-line test comment because we found Github before
-            - With GitHub **Markdown** :sparkles:
-            - Created by [create-or-update-comment][1]
-          reactions: 'eyes'
-      - name: Find Comment NotFound
-        uses: peter-evans/find-comment@v1 
-        id: fcnf
-        with:
-          issue-number: ${{github.event.number}}
-          body-includes: NotFound
-      - run: echo ${{ steps.fc.outputs.comment-id }}
-      - run: echo ${{ steps.fcnf.outputs.comment-id }}
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          issue-number: ${{github.event.number}}
-          comment-id: ${{ steps.fcnf.outputs.comment-id }}
-          body: |
-            This is a multi-line test comment
-            - With GitHub **Markdown** :sparkles: 
-            - Created by [create-or-update-comment][1]
-            - The text was not found.
-          reactions: 'rocket'
+#   comment_pr_test:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Find Comment
+#         uses: peter-evans/find-comment@v1
+#         id: fc
+#         with:
+#           issue-number: ${{github.event.number}}
+#           body-includes: GitHub
+#       - name: Create comment
+#         uses: peter-evans/create-or-update-comment@v1
+#         with:
+#           issue-number: ${{github.event.number}}
+#           comment-id: ${{ steps.fc.outputs.comment-id }}
+#           edit-mode: replace
+#           body: |
+#             This is a multi-line test comment because we found Github before
+#             - With GitHub **Markdown** :sparkles:
+#             - Created by [create-or-update-comment][1]
+#           reactions: 'eyes'
+#       - name: Find Comment NotFound
+#         uses: peter-evans/find-comment@v1 
+#         id: fcnf
+#         with:
+#           issue-number: ${{github.event.number}}
+#           body-includes: NotFound
+#       - run: echo ${{ steps.fc.outputs.comment-id }}
+#       - run: echo ${{ steps.fcnf.outputs.comment-id }}
+#       - name: Create comment
+#         uses: peter-evans/create-or-update-comment@v1
+#         with:
+#           issue-number: ${{github.event.number}}
+#           comment-id: ${{ steps.fcnf.outputs.comment-id }}
+#           body: |
+#             This is a multi-line test comment
+#             - With GitHub **Markdown** :sparkles: 
+#             - Created by [create-or-update-comment][1]
+#             - The text was not found.
+#           reactions: 'rocket'
 
-  terraform: 
-    runs-on: ubuntu-latest
-    defaults:
-      run: 
-        shell: bash
-        working-directory: terraform
-    env:
-      GITHUB_ACTION_S3_BUCKET: sd.github-actions-artifact
-      TERRAFORM_S3_BUCKET_KEY: terraform/${{github.repository}}/${{github.event_name}}/${{github.event.number}}
-      TERRAFORM_ENVIRONMENT: ${{github.event_name}}_${{github.event.number}}"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 20
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Bash test
-        env: 
-          IMAGE_TAG: develop
-        run: |
-          if [ ${{ github.event_name == 'pull_request' }} ]; then export IMAGE_TAG=pull-request-${{github.event.number}}; fi
-          echo $IMAGE_TAG
-          echo ${{ github.sha }}
-          git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-      - name: Configure AWS Credentials (SD Dev Account)
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: eu-west-1
-      - name: Terraform Init
-        # if: github.event_name == 'pull_request' && github.event.action == 'open'
-        run: |
-          terraform init \
-          -backend-config="bucket=$GITHUB_ACTION_S3_BUCKET" \
-          -backend-config="key=$TERRAFORM_S3_BUCKET_KEY" \
-          -backend-config="region=eu-west-1" \
-          -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" \
-          -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}"
-      - name: Terraform Format
-        run: terraform fmt -check
-      - name: Terraform Plan
-        run: |
-          terraform plan \
-          -var "environment=${{github.event_name}}_${{github.event.number}}" \
-          -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" \
-          -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}" \
-          -out=plan.tfplan
-      - name: Terraform Apply
-        run: terraform apply  -auto-approve "plan.tfplan"
-      - name: Terraform Output
-        run: terraform output
-      - name: PR is closing - Terraform destroy
-        if: github.event_name == 'pull_request' && github.event.action == 'closed'
-        run: |
-          terraform destroy -auto-approve \
-          -var "environment=${{github.event_name}}_${{github.event.number}}" \
-          -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" \
-          -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}"
-      - name: Terraform Outputs
-        id: terraform-outputs
-        run: |
-          echo "::set-output name=vpc_id::$(terraform output | awk -F '[=]+' '/aws_vpc_public/ {print $2}')"
-      - name: Find Comment
-        uses: peter-evans/find-comment@v1
-        id: fc
-        with:
-          issue-number: ${{github.event.number}}
-          body-includes: PR ${{github.event.number}} Deployment links
-      - name: Create Updated comment
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          issue-number: ${{github.event.number}}
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          edit-mode: replace
-          body: |
-            PR ${{github.event.number}} Deployment links :sparkles: 
-            - [API][1]
-            - [Client App][2]
-            - VPC ${{steps.terraform-outputs.outputs.vpc_id}}
+#   terraform: 
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run: 
+#         shell: bash
+#         working-directory: terraform
+#     env:
+#       GITHUB_ACTION_S3_BUCKET: sd.github-actions-artifact
+#       TERRAFORM_S3_BUCKET_KEY: terraform/${{github.repository}}/${{github.event_name}}/${{github.event.number}}
+#       TERRAFORM_ENVIRONMENT: ${{github.event_name}}_${{github.event.number}}"
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#         with:
+#           fetch-depth: 20
+#       - name: Dump GitHub context
+#         env:
+#           GITHUB_CONTEXT: ${{ toJson(github) }}
+#         run: echo "$GITHUB_CONTEXT"
+#       - name: Bash test
+#         env: 
+#           IMAGE_TAG: develop
+#         run: |
+#           if [ ${{ github.event_name == 'pull_request' }} ]; then export IMAGE_TAG=pull-request-${{github.event.number}}; fi
+#           echo $IMAGE_TAG
+#           echo ${{ github.sha }}
+#           git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v1
+#       - name: Configure AWS Credentials (SD Dev Account)
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+#           aws-region: eu-west-1
+#       - name: Terraform Init
+#         # if: github.event_name == 'pull_request' && github.event.action == 'open'
+#         run: |
+#           terraform init \
+#           -backend-config="bucket=$GITHUB_ACTION_S3_BUCKET" \
+#           -backend-config="key=$TERRAFORM_S3_BUCKET_KEY" \
+#           -backend-config="region=eu-west-1" \
+#           -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" \
+#           -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}"
+#       - name: Terraform Format
+#         run: terraform fmt -check
+#       - name: Terraform Plan
+#         run: |
+#           terraform plan \
+#           -var "environment=${{github.event_name}}_${{github.event.number}}" \
+#           -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" \
+#           -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}" \
+#           -out=plan.tfplan
+#       - name: Terraform Apply
+#         run: terraform apply  -auto-approve "plan.tfplan"
+#       - name: Terraform Output
+#         run: terraform output
+#       - name: PR is closing - Terraform destroy
+#         if: github.event_name == 'pull_request' && github.event.action == 'closed'
+#         run: |
+#           terraform destroy -auto-approve \
+#           -var "environment=${{github.event_name}}_${{github.event.number}}" \
+#           -var "aws_access_key=${{secrets.AWS_ACCESS_KEY}}" \
+#           -var "aws_secret_key=${{secrets.AWS_SECRET_KEY}}"
+#       - name: Terraform Outputs
+#         id: terraform-outputs
+#         run: |
+#           echo "::set-output name=vpc_id::$(terraform output | awk -F '[=]+' '/aws_vpc_public/ {print $2}')"
+#       - name: Find Comment
+#         uses: peter-evans/find-comment@v1
+#         id: fc
+#         with:
+#           issue-number: ${{github.event.number}}
+#           body-includes: PR ${{github.event.number}} Deployment links
+#       - name: Create Updated comment
+#         uses: peter-evans/create-or-update-comment@v1
+#         with:
+#           issue-number: ${{github.event.number}}
+#           comment-id: ${{ steps.fc.outputs.comment-id }}
+#           edit-mode: replace
+#           body: |
+#             PR ${{github.event.number}} Deployment links :sparkles: 
+#             - [API][1]
+#             - [Client App][2]
+#             - VPC ${{steps.terraform-outputs.outputs.vpc_id}}
             
-            [1]: http://example.com
-            [2]: http://example.com/examples
+#             [1]: http://example.com
+#             [2]: http://example.com/examples
             
-          reactions: hooray, rocket
+#           reactions: hooray, rocket
 

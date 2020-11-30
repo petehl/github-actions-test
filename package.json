@@ -1,0 +1,19 @@
+{
+  "name": "basic-node-app",
+  "version": "1.0.0",
+  "description": "basic node app to test docker builds ",
+  "main": "script.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/petehl/github-actions-test.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/petehl/github-actions-test/issues"
+  },
+  "homepage": "https://github.com/petehl/github-actions-test#readme"
+}

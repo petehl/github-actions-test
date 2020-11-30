@@ -2,6 +2,19 @@ name: Push
 on: 
   push:
 jobs:
+  tagify_git_branch:
+    runs-on: ubuntu-latest
+    name: Make git branch more docker tag friendly
+    outputs:
+      git_branch_tag: ${{steps.tagify_git_branch.outputs.docker-branch-tag}}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Convert slashes to hyphens for gitbranch to conform with docker tags
+        id: tagify_git_branch
+        run: |
+          export GIT_BRANCH_IMAGE_TAG=git-branch-$(git branch --show-current | sed 's/\//-/g')
+          echo "::set-output name=docker-branch-tag::${GIT_BRANCH_IMAGE_TAG}"
+  
   app: 
     runs-on: ubuntu-latest
     defaults:
@@ -28,3 +41,43 @@ jobs:
           echo "hash = $(git rev-parse --short HEAD)"
           echo "::set-output name=sha7::$(git rev-parse --short HEAD)"
           jq .test ../test.json
+  
+  build-app:
+    name: Docker- build / publish
+    runs-on: ubuntu-latest
+    needs: tagify_git_branch
+    outputs: 
+      published_image: ${{ steps.push-docker-to-hub.outputs.docker-image }}
+    env:
+      DOCKERHUB: yes
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          buildkitd-flags: --debug
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{github.ref}}-${{ github.sha }}
+      - name: Build / Push Docker Image
+        id: push-docker-to-hub
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Dockerfile
+          file: ./Dockerfile
+          push: true
+          tags: |
+            plaht/docker-cache-test:latest
+            plaht/docker-cache-test:${{needs.tagify_git_branch.outputs.git_branch_tag}}
+            plaht/docker-cache-test:gitsha_${{github.sha}}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+

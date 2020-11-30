@@ -1,0 +1,11 @@
+# docker-compose.yml
+version: "3.0"
+services:
+  app:
+    build:
+      context: .
+    image: "$API_BUILD_IMAGE:-plaht/docker-cache-test:latest"
+    ports:
+      - 3200:3001
+    environment:
+      NODE_ENV: production
