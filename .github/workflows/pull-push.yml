@@ -89,8 +89,10 @@ jobs:
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{github.ref}}-${{ github.sha }}
+      - run: docker images
       - name: Pull / Run the stack
         run: |
           docker-compose up -d --no-build
         env:
           NODE_ENV: production
+          APP_BUILD_IMAGE: plaht/docker-cache-test:latest
