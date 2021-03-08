@@ -1,16 +1,16 @@
-name: Post push
-on:
-  workflow_run:
-    workflows: ["Push"]
-    types: 
-      - completed
-      - requested
-jobs:
-  app:
-    runs-on: ubuntu-latest
-    steps: 
-      - uses: actions/checkout@v2
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+# name: Post push
+# on:
+#   workflow_run:
+#     workflows: ["Push"]
+#     types: 
+#       - completed
+#       - requested
+# jobs:
+#   app:
+#     runs-on: ubuntu-latest
+#     steps: 
+#       - uses: actions/checkout@v2
+#       - name: Dump GitHub context
+#         env:
+#           GITHUB_CONTEXT: ${{ toJson(github) }}
+#         run: echo "$GITHUB_CONTEXT"
