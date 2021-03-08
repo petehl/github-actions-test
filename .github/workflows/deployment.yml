@@ -11,3 +11,4 @@ jobs:
         # needs: [build_api, build_apa]
         steps:
             - uses: actions/checkout@v2
+            - uses: ahmadnassri/action-workflow-run-wait@v1
