@@ -1,6 +1,7 @@
 name: Push
 on: 
   push:
+    branches: [ 'fez' ]
 jobs:
   tagify_git_branch:
     runs-on: ubuntu-latest
