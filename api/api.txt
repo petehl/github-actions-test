@@ -1,3 +1,3 @@
 i'm an api
 
-update to both1
+back to a plain api
