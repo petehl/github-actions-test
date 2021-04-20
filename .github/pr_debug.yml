@@ -1,9 +1,11 @@
-name: Deploy
+
+name: PR debug
 on:
-  push:
-    branches: ["master"]
+  pull_request:
+    branches:
+     - master
 jobs:
-  deploy_debug:
+  pr_debug:
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v2

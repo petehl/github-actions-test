@@ -1,14 +1,14 @@
-name: Test apa
-on: 
-  push:
-    paths:
-      - "api/apa.txt"
-jobs:
-  build_apa:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Building
-        run: |
-          sleep 4
-          echo 'success'
+# name: Test apa
+# on: 
+#   push:
+#     paths:
+#       - "api/apa.txt"
+# jobs:
+#   build_apa:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Building
+#         run: |
+#           sleep 4
+#           echo 'success'
